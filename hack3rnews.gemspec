@@ -9,4 +9,5 @@ Gem::Specification.new do |s|
   s.files       = ['README', 'lib/hack3rnews.rb', 'spec/hack3rnews_spec.rb']
   s.homepage    = 'https://github.com/ese-varo'
   s.licens      = 'MIT'
+  s.add_dependency = 'rest-client'
 end
