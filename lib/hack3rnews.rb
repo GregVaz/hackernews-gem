@@ -34,7 +34,15 @@ class HackerNew
       stories
     end
 
-  def top_job_stories(num = 20)
+    def story_comments(story)
+      story_data = request_item('item', story)
+      comment_ids = story_data["kids"] || [nil]
+      comments = []
+      while comment_id = comment_ids.shift
+        comments << request_item('item', comment_id)
+      end
+      comments
+    end
 
   end
 
