@@ -24,7 +24,15 @@ class HackerNew
       stories
     end
 
-  end
+    def user_stories(user, num = 3)
+      stories = []
+      user_data = request_item('user', user)
+      user_story_ids = user_data["submitted"].first(num) || [nil]
+      while story_id = user_story_ids.shift
+        stories << request_item('item', story_id)
+      end
+      stories
+    end
 
   def top_job_stories(num = 20)
 
