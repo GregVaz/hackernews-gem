@@ -15,24 +15,14 @@ class HackerNew
       stories
     end
 
-  def new_stories(num = 20)
-    new_stories_ids = request_bunch('newstories', num)
-    # while story_id = new_stories_ids.shift
-    #   @stories << request('item', story_id)
-    # end
-    @stories << request_item('item', new_stories_ids[0])
-    # @stories
-  end
-
-  def top_stories(num = 20)
-
-  end
-
-  def user_stories(user, num = 10)
-
-  end
-
-  def story_comments(story)
+    def top_stories(num = 3)
+      stories = []
+      top_story_ids = request_bunch('topstories', num)
+      while story_id = top_story_ids.shift
+        stories << request_item('item', story_id)
+      end
+      stories
+    end
 
   end
 
