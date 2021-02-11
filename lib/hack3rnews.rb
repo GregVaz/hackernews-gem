@@ -56,25 +56,21 @@ class HackerNew
       top_jobs
     end
 
-  private
-  def request(url)
-    response = RestClient.get(url)
-    JSON.parse(response)
-  end
+    private
+    def request(url)
+      response = RestClient.get(url)
+      JSON.parse(response)
+    end
 
-  def request_item(type, id)
-    url = URL + type + '/' + id.to_s + JSON_FORMAT
-    request(url)
-  end
+    def request_item(type, id)
+      url = URL + type + '/' + id.to_s + JSON_FORMAT
+      request(url)
+    end
 
-  def request_bunch(type, num)
-    url = URL + type + JSON_FORMAT
-    response = request(url)
-    response.first(num)
+    def request_bunch(type, num = nil)
+      url = URL + type + JSON_FORMAT
+      response = request(url)
+      num ? response.first(num) : response
+    end
   end
 end
-=begin
-  - item, user, maxitem
-  - topstories, newstories, beststories
-  - askstories, showstories, jobstories
-=end
