@@ -33,13 +33,9 @@ class HackerNew
 
   private
     def capture_item_kids(type, opt = {})
-      kids = []
       item = request_item(type, opt[:item_id])
       kid_ids = capture_ids(item, opt)
-      while kid_id = kid_ids.shift
-        kids << request_item('item', kid_id)
-      end
-      kids
+      capture_items(kid_ids)
     end
 
     def capture_ids(item, opt)
@@ -49,12 +45,16 @@ class HackerNew
     end
 
     def capture_stories(type, num)
-      stories = []
-      storie_ids = request_bunch(type, num)
-      while story_id = storie_ids.shift
-        stories << request_item('item', story_id)
+      story_ids = request_bunch(type, num)
+      capture_items(story_ids)
+    end
+
+    def capture_items(item_ids)
+      items = []
+      while item_id = item_ids.shift
+        items << request_item('item', item_id)
       end
-      stories
+      items
     end
 
     def request(url)
