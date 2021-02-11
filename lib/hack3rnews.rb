@@ -5,9 +5,15 @@ class HackerNew
   URL = 'https://hacker-news.firebaseio.com/v0/'.freeze
   JSON_FORMAT = '/.json?print=pretty'.freeze
 
-  def initialize
-    @stories = []
-  end
+  class << self
+    def new_stories(num = 3)
+      stories = []
+      new_story_ids = request_bunch('newstories', num)
+      while story_id = new_story_ids.shift
+        stories << request_item('item', story_id)
+      end
+      stories
+    end
 
   def new_stories(num = 20)
     new_stories_ids = request_bunch('newstories', num)
