@@ -6,15 +6,15 @@ class HackerNew
   JSON_FORMAT = '/.json?print=pretty'.freeze
 
   class << self
-    def new_stories(num = 3)
+    def new_stories(num = 5)
       capture_stories('newstories', num)
     end
 
-    def top_stories(num = 3)
+    def top_stories(num = 5)
       capture_stories('topstories', num)
     end
 
-    def user_stories(user, num = 3)
+    def user_stories(user, num = 5)
       capture_item_kids('user', num: num, item_id: user, kind: 'submitted')
     end
 
@@ -22,7 +22,7 @@ class HackerNew
       capture_item_kids('item', item_id: story, kind: 'kids')
     end
 
-    def top_job_stories(num = 20)
+    def top_job_stories(num = 5)
       job_scores = []
       request_bunch('jobstories').each do |job_id|
         job_scores << request_item('item', job_id)

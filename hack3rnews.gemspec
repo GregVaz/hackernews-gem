@@ -6,9 +6,9 @@ Gem::Specification.new do |s|
   s.summary        = 'Consume hackernews content (stories, comments, etc)'
   s.description    = "Consume heckernews content through the use of their API"
   s.email          = 'varoboss.ap@gmail.com'
-  s.files          = ['README', 'lib/hack3rnews.rb', 'spec/hack3rnews_spec.rb']
+  s.files          = ['README.md', 'lib/hack3rnews.rb', 'spec/hack3rnews_spec.rb']
   s.homepage       = 'https://github.com/ese-varo'
-  s.licens         = 'MIT'
-  s.add_dependency = 'rest-client'
-  s.add_dependency = 'json'
+  s.license        = 'MIT'
+  s.add_dependency('rest-client', '>= 2.1')
+  s.add_development_dependency('rspec', '~> 3.0')
 end
