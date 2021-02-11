@@ -44,7 +44,17 @@ class HackerNew
       comments
     end
 
-  end
+    def top_job_stories(num = 2)
+      job_scores = []
+      top_jobs = []
+      request_bunch('jobstories').each do |job_id|
+        job_scores << request_item('item', job_id)["score"]
+      end
+      job_scores.sort.last(num).reverse.each do |job_id|
+        top_jobs << request_item('item', job_id)
+      end
+      top_jobs
+    end
 
   private
   def request(url)
