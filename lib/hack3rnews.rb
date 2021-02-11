@@ -7,56 +7,56 @@ class HackerNew
 
   class << self
     def new_stories(num = 3)
-      stories = []
-      new_story_ids = request_bunch('newstories', num)
-      while story_id = new_story_ids.shift
-        stories << request_item('item', story_id)
-      end
-      stories
+      capture_stories('newstories', num)
     end
 
     def top_stories(num = 3)
-      stories = []
-      top_story_ids = request_bunch('topstories', num)
-      while story_id = top_story_ids.shift
-        stories << request_item('item', story_id)
-      end
-      stories
+      capture_stories('topstories', num)
     end
 
     def user_stories(user, num = 3)
+      capture_item_kids('user', num: num, item_id: user, kind: 'submitted')
+    end
+
+    def story_comments(story)
+      capture_item_kids('item', item_id: story, kind: 'kids')
+    end
+
+    def top_job_stories(num = 20)
+      job_scores = []
+      request_bunch('jobstories').each do |job_id|
+        job_scores << request_item('item', job_id)
+      end
+      job_scores.sort_by! { |hsh| hsh["score"] }
+      job_scores.last(num).reverse
+    end
+
+  private
+    def capture_item_kids(type, opt = {})
+      kids = []
+      item = request_item(type, opt[:item_id])
+      kid_ids = capture_ids(item, opt)
+      while kid_id = kid_ids.shift
+        kids << request_item('item', kid_id)
+      end
+      kids
+    end
+
+    def capture_ids(item, opt)
+      num = opt[:num]
+      return (item[opt[:kind]].first(num) || [nil]) if num
+      item[opt[:kind]] || [nil]
+    end
+
+    def capture_stories(type, num)
       stories = []
-      user_data = request_item('user', user)
-      user_story_ids = user_data["submitted"].first(num) || [nil]
-      while story_id = user_story_ids.shift
+      storie_ids = request_bunch(type, num)
+      while story_id = storie_ids.shift
         stories << request_item('item', story_id)
       end
       stories
     end
 
-    def story_comments(story)
-      story_data = request_item('item', story)
-      comment_ids = story_data["kids"] || [nil]
-      comments = []
-      while comment_id = comment_ids.shift
-        comments << request_item('item', comment_id)
-      end
-      comments
-    end
-
-    def top_job_stories(num = 2)
-      job_scores = []
-      top_jobs = []
-      request_bunch('jobstories').each do |job_id|
-        job_scores << request_item('item', job_id)["score"]
-      end
-      job_scores.sort.last(num).reverse.each do |job_id|
-        top_jobs << request_item('item', job_id)
-      end
-      top_jobs
-    end
-
-    private
     def request(url)
       response = RestClient.get(url)
       JSON.parse(response)
