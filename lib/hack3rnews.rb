@@ -1,5 +1,4 @@
-require 'rest-client'
-require 'json'
+require_relative 'hack3rnews/request'
 
 class HackerNew
   URL = 'https://hacker-news.firebaseio.com/v0/'.freeze
@@ -7,70 +6,53 @@ class HackerNew
 
   class << self
     def new_stories(num = 5)
-      capture_stories('newstories', num)
+      stories('newstories', num)
     end
 
     def top_stories(num = 5)
-      capture_stories('topstories', num)
+      stories('topstories', num)
     end
 
-    def user_stories(user, num = 5)
-      capture_item_kids('user', num: num, item_id: user, kind: 'submitted')
+    def user_stories(user_id, num = 5)
+      user = item('user', user_id)
+      items(user['submitted'].first(num) || [])
     end
 
-    def story_comments(story)
-      capture_item_kids('item', item_id: story, kind: 'kids')
+    def story_comments(story_id)
+      story = item('item', story_id)
+      items(story['kids'] || [])
     end
 
     def top_job_stories(num = 5)
-      job_scores = []
-      request_bunch('jobstories').each do |job_id|
-        job_scores << request_item('item', job_id)
-      end
-      job_scores.sort_by! { |hsh| hsh["score"] }
-      job_scores.last(num).reverse
+      top_items(stories('jobstories'), 'score').last(num)
     end
 
   private
-    def capture_item_kids(type, opt = {})
-      item = request_item(type, opt[:item_id])
-      kid_ids = capture_ids(item, opt)
-      capture_items(kid_ids)
+    def stories(type, num = nil)
+      story_ids = request.item(url(type))
+      story_ids = story_ids.first(num) if num
+      items(story_ids)
     end
 
-    def capture_ids(item, opt)
-      num = opt[:num]
-      return (item[opt[:kind]].first(num) || [nil]) if num
-      item[opt[:kind]] || [nil]
+    def top_items(items, field)
+      items.sort_by! { |hsh| hsh[field] }.reverse
     end
 
-    def capture_stories(type, num)
-      story_ids = request_bunch(type, num)
-      capture_items(story_ids)
+    def items(item_ids)
+      item_ids.map {|item_id| item('item', item_id)}
     end
 
-    def capture_items(item_ids)
-      items = []
-      while item_id = item_ids.shift
-        items << request_item('item', item_id)
-      end
-      items
+    def item(type, item_id)
+      request.item(url(type, item_id))
     end
 
-    def request(url)
-      response = RestClient.get(url)
-      JSON.parse(response)
+    def url(type, id = nil)
+      return URL + type + '/' + id.to_s + JSON_FORMAT if id
+      URL + type + JSON_FORMAT
     end
 
-    def request_item(type, id)
-      url = URL + type + '/' + id.to_s + JSON_FORMAT
-      request(url)
-    end
-
-    def request_bunch(type, num = nil)
-      url = URL + type + JSON_FORMAT
-      response = request(url)
-      num ? response.first(num) : response
+    def request
+      Request.new
     end
   end
 end
